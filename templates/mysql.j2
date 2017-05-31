@@ -1,0 +1,6 @@
+{% import "alert_macro.j2" as alert with context %}
+check process mysql with pidfile /var/run/mysqld/mysqld.pid
+    if failed host 127.0.0.1 port 3306 
+        then {{ alert.alert(mysql_alert_type) }}
+    start program = "/etc/init.d/mysql start"
+    stop program = "/etc/init.d/mysql stop"

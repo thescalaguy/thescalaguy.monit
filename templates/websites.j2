@@ -1,0 +1,32 @@
+{% import "alert_macro.j2" as alert with context %}
+{% for website in websites %}
+check host {{ website.display_name }} with address {{ website.address }}
+    if failed
+        ping 
+    then
+      {{ alert.alert( website.alert_type ) }}
+{% if website.ssl %}
+    if failed 
+        port 443 
+        protocol https
+        and certificate valid > 30 days
+        use ssl options {verify: enable}
+        for {{ website.cycles }} cycles
+    then 
+      {{ alert.alert( website.alert_type ) }}   
+{% else %}
+    if failed 
+        port 80 
+        protocol http
+        for {{ website.cycles }} cycles
+    then
+      {{ alert.alert( website.alert_type ) }}       
+{% endif %}
+{% if website.alert_type == "mail" %}
+{% for email in website.alert %}
+    alert {{ email }}
+{% endfor %}
+{% endif %}
+################################################################################
+
+{% endfor %}

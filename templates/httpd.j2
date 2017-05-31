@@ -1,0 +1,14 @@
+set httpd 
+    port {{ httpd_port }}
+    use address {{ use_address }}
+    
+    # accept connections from these hosts
+{% for host in allow_hosts %}
+    allow {{ host }}
+{% endfor %}
+    
+    # accept connections from these users
+    allow md5 {{ monit_htpasswd_file }}{% for user in allow_users %} {{ user.username }} {% endfor %}
+    
+    allow @monit
+    allow @users readonly

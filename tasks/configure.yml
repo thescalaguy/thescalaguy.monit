@@ -1,0 +1,102 @@
+# Delete old config files
+- name: Delete old configs
+  command: "rm -rf {{ monit_conf_dir }}"
+
+# Create config directory
+- name: Create config directory
+  file: 
+    path: "{{ monit_conf_dir }}"
+    state: "directory"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+- name: Create lib directory
+  file:
+    path: "{{ monit_lib_directory }}"
+    state: "directory"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Make HTTPD directory to enable passwords
+- name: Make HTTPD directory
+  file: 
+    path: "{{ monit_htpasswd_dir }}"
+    state: "directory"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Make scripts directory to copy any custom scripts
+- name: Create scripts directory
+  file: 
+    path: "{{ monit_scripts_dir }}"
+    state: "directory"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Copy monitrc
+- name: Copy monitrc
+  template:
+    src: templates/monitrc.j2
+    dest: "{{ monitrc_location }}"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Copy HTTPD conf into the conf directory
+# to enable monit CLI and web interface
+- name: Enable HTTPD
+  template: 
+    src: templates/httpd.j2
+    dest: "{{ monit_conf_dir }}/httpd"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Copy htpasswd file
+- name: Copy htpasswd file
+  template:
+    src: templates/htpasswd.j2
+    dest: "{{ monit_htpasswd_file }}"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Copy the template to monitor websites
+- name: Copy websites to monitor
+  template:
+    src: templates/websites.j2
+    dest: "{{ monit_conf_dir }}/websites"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Copy the template to configure mail server
+- name: Copy mail server template
+  template: 
+    src: templates/mailserver.j2
+    dest: "{{ monit_conf_dir }}/mailserver"
+    mode: "{{ monit_mode }}" # do not change the permissions
+  when: mail_server_enabled
+
+# Copy template to enable Slack integration
+- name: Copy Slack script
+  template:
+    src: "templates/slack.rb.j2"
+    dest: "{{ monit_scripts_dir }}/slack.rb"
+    mode: "{{ monit_mode }}" # do not change the permissions
+  when: slack_enabled
+
+# Copy the template to monitor disk usage
+- name: Copy file system template
+  template: 
+    src: templates/filesystem.j2
+    dest: "{{ monit_conf_dir }}/filesystem"
+    mode: "{{ monit_mode }}" # do not change the permissions
+
+# Now copy any out-of-the-box configs we provide
+# eg. MySQL, PostgreSQL, etc.
+- name: Copy MySQL template
+  template: 
+    src: templates/mysql.j2
+    dest: "{{ monit_conf_dir }}/mysql"
+    mode: "{{ monit_mode }}"
+  when: monitor_mysql
+
+# Hacky way to start / reload config changes
+- name: Start monit
+  command: "monit"
+
+- name: Wait for monit to start (5 seconds...)
+  pause: 
+    seconds: 5
+
+- name: Restart monit
+  command: "monit reload"

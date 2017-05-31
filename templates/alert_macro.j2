@@ -1,0 +1,3 @@
+{% macro alert(type) -%}
+{% if type == "mail" %}alert {% elif type == "slack" %}exec {{ monit_slack_script }} {% else %}alert {% endif %}
+{%- endmacro %}

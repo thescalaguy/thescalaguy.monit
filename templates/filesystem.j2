@@ -1,0 +1,17 @@
+{% import "alert_macro.j2" as alert with context %}
+{% for fs in filesystems %}
+check filesystem {{ fs.display_name }} with path {{ fs.path }}
+    if space usage > {{ fs.space_usage }}% 
+        for {{ fs.cycles }} cycles 
+        then {{ alert.alert( fs.alert_type ) }}
+    if service time > 300 milliseconds 
+        for {{ fs.cycles }} cycles 
+        then {{ alert.alert( fs.alert_type ) }}
+{% if fs.alert_type == "mail" %}
+{% for email in fs.alert %}
+    alert {{ email }}
+{% endfor %}
+{% endif %}
+################################################################################
+
+{% endfor %}

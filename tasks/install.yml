@@ -1,0 +1,15 @@
+- name: Download and extract Monit zip file
+  unarchive: 
+    remote_src: yes
+    src: "https://mmonit.com/monit/dist/binary/{{ major }}.{{ minor }}.{{ patch }}/monit-{{ major }}.{{ minor }}.{{ patch }}-linux-x64.tar.gz"
+    dest: "{{ monit_dload_dir }}"
+
+- name: Link files
+  file:
+    src: "{{ monit_dload_dir }}/monit-{{ major }}.{{ minor }}.{{ patch }}/bin/monit"
+    dest: /usr/bin/monit
+    mode: "{{ monit_mode }}"
+    state: link
+
+# TODO:
+# Add support for other OS

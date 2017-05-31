@@ -1,0 +1,68 @@
+---
+major: 5
+minor: 22
+patch: 0
+
+# Variables to control monit cycles
+daemon_interval: 120     # 2-minute monitoring interval
+daemon_initial_delay: 0  # start checking immediately after monit start
+
+# Variables to enable monit CLI
+# monit CLI won't work unless HTTPD is enabled
+enable_httpd: true 
+monit_admin_user: "admin" # default user
+monit_admin_pass: "$apr1$6r2n0VxN$Z4.7ykz3DRCjBgPDkJA/00" # htpasswd-formatted password. Use: http://www.htaccesstools.com/htpasswd-generator/
+httpd_port: 2812
+use_address: "localhost"  # the address to listen on
+allow_hosts:              # hosts allowed to connect
+  - "0.0.0.0/0.0.0.0"     # allow all hosts to connect
+allow_users:              # users allowed to login
+  - username: "{{ monit_admin_user }}"
+    password: "{{ monit_admin_pass }}"
+
+# Variables to setup mail server
+# This is an example to show how to set SMTP credentials
+# Replace the username and password with something appropriate when using the role
+# NOTE: use Ansible Vault to store your secrets
+mail_server_enabled: true
+mail_server_address: smtp.gmail.com
+mail_server_port: 587
+mail_server_username: user
+mail_server_password: password
+
+# Variables to setup Slack integration
+# Follow instructions at https://mmonit.com/wiki/MMonit/SlackNotification
+slack_enabled: false
+slack_x: 
+slack_y: 
+slack_z: 
+
+# List of websites to monitor
+# This is just an example to show how to configure website monitoring
+# In a prod environment you MAY want to use an empty list if you aren't monitoring any website
+websites: 
+    - display_name: Google
+      alert_type: "slack"
+      cycles: 2
+      address: "google.com"
+      ssl: true
+      alert:
+        - "admin@yourcompany.com"
+
+# List of disks to monitor
+# This is just an example to show how to configure disk monitoring
+# In a prod environment you MAY want to use an empty list if you aren't monitoring any disks
+filesystems:
+    - display_name: disk1
+      alert_type: "slack"
+      cycles: 10
+      path: "/dev/sda1"
+      space_usage: 95
+      service_time: 300
+      alert:
+        - "admin@yourcompany.com"
+
+# Variables to use out-of-the-box monitoring for commonly used processes
+monitor_mysql: false
+mysql_alert_type: "slack"
+mysql_cycles: 5
