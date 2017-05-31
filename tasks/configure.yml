@@ -87,8 +87,15 @@
   template: 
     src: templates/mysql.j2
     dest: "{{ monit_conf_dir }}/mysql"
-    mode: "{{ monit_mode }}"
+    mode: "{{ monit_mode }}" # do not change the permissions
   when: monitor_mysql
+
+- name: Copy PostgreSQL template
+  template: 
+    src: templates/postgresql.j2
+    dest: "{{ monit_conf_dir }}/postgresql"
+    mode: "{{ monit_mode }}" # do not change the permissions
+  when: monitor_postgresql
 
 # Hacky way to start / reload config changes
 - name: Start monit
