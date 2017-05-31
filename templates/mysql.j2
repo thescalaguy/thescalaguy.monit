@@ -5,3 +5,8 @@ check process mysql with pidfile /var/run/mysqld/mysqld.pid
         then {{ alert.alert(mysql_alert_type) }}
     start program = "/etc/init.d/mysql start"
     stop program = "/etc/init.d/mysql stop"
+{% if mysql_alert_type == "mail" %}
+{% for email in mysql_alert %}
+    alert {{ email }}
+{% endfor %}
+{% endif %}

@@ -1,6 +1,6 @@
 # Delete old config files
 - name: Delete old configs
-  command: "rm -rf {{ monit_conf_dir }}"
+  command: "rm -rf {{ monit_conf_dir }}/*"
 
 # Create config directory
 - name: Create config directory

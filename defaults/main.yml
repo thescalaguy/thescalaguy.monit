@@ -65,9 +65,13 @@ filesystems:
 # Variables to use out-of-the-box monitoring for commonly used processes
 monitor_mysql: false
 mysql_alert_type: "mail"
+mysql_alert:
+  - "admin@yourcompany.com"
 mysql_cycles: 5
 
 monitor_postgresql: false
 postgresql_version : 
+postgresql_alert: 
+  - "admin@yourcompany.com"
 postgresql_alert_type: "mail"
 postgresql_cycles: 5
